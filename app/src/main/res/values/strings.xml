@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Root4Word</string>
+    <string name="Home">홈</string>
+    <string name="List">리스트</string>
+    <string name="Setting">설정</string>
 </resources>

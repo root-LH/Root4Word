@@ -3,16 +3,16 @@
     <item
         android:id="@+id/nav_word_list"
         android:icon="@drawable/outline_book_24"
-        android:title="검색" />
+        android:title="@string/List" />
 
     <item
         android:id="@+id/nav_home"
         android:icon="@drawable/baseline_home_24"
-        android:title="홈" />
+        android:title="@string/Home" />
 
     <item
         android:id="@+id/nav_account"
         android:icon="@drawable/account_circle"
-        android:title="설정" />
+        android:title="@string/Setting" />
 
 </menu>
