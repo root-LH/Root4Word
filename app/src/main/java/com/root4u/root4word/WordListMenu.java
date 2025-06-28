@@ -25,9 +25,6 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 
-import org.checkerframework.checker.units.qual.A;
-import org.checkerframework.checker.units.qual.C;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -40,7 +37,7 @@ import java.util.List;
 public class WordListMenu extends AppCompatActivity {
 
     private final String TAG = "WordListMenu";
-    private static final String WORDLIST_FILE = "wordList.csv";
+    public static final String WORDLIST_FILE = "wordList.csv";
 
     private void createFileNotExist(){
         File file = new File(getFilesDir(), WORDLIST_FILE);
@@ -139,10 +136,9 @@ public class WordListMenu extends AppCompatActivity {
         adapter = new WordListAdapter(this, wordList);
         recyclerView.setAdapter(adapter);
 
+        // 단어장 추가 버튼 기능 할당
         FloatingActionButton addWordListBtn = findViewById(R.id.addWordList);
         addWordListBtn.setOnClickListener(view -> showAddWordListDialog());
-
-        // 각각의 단어 목록에 WordListDetailActivity 연결
 
     }
 
@@ -214,6 +210,5 @@ public class WordListMenu extends AppCompatActivity {
         adapter.notifyItemInserted(wordList.size()-1);
 
     }
-
 
 }

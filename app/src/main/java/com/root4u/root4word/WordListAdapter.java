@@ -48,7 +48,7 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.ViewHo
         // 아이템 클릭 시 detail 가진 채로 WordListDetailActivity로 넘어감
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, WordListDetailActivity.class);
-            intent.putExtra("filename", item.getName());
+            intent.putExtra("fileName", item.getName()+".csv");
             context.startActivity(intent);
         });
     }
