@@ -132,14 +132,18 @@ public class WordListMenu extends AppCompatActivity {
             }
         });
 
+        // 단어 목록 리스트 불러오기
         RecyclerView recyclerView = findViewById(R.id.wordListRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         wordList = loadWordListFromCsv();
-        adapter = new WordListAdapter(wordList);
+        adapter = new WordListAdapter(this, wordList);
         recyclerView.setAdapter(adapter);
 
         FloatingActionButton addWordListBtn = findViewById(R.id.addWordList);
         addWordListBtn.setOnClickListener(view -> showAddWordListDialog());
+
+        // 각각의 단어 목록에 WordListDetailActivity 연결
+
     }
 
     private void showAddWordListDialog() {

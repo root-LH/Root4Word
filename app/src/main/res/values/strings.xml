@@ -4,4 +4,5 @@
     <string name="List">리스트</string>
     <string name="Setting">설정</string>
     <string name="add_wordList">단어장 추가</string>
+    <string name="addWord">단어 추가</string>
 </resources>

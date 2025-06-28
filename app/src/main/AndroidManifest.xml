@@ -20,6 +20,9 @@
             android:name=".WordListMenu"
             android:exported="false" />
         <activity
+            android:name=".WordListDetailActivity"
+            android:exported="false"/>
+        <activity
             android:name=".Intro"
             android:exported="true">
             <intent-filter>
