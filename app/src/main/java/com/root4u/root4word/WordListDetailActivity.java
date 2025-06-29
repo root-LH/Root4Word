@@ -4,6 +4,7 @@ import static com.root4u.root4word.WordListMenu.WORDLIST_FILE;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -23,6 +24,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class WordListDetailActivity extends AppCompatActivity {
@@ -74,16 +76,65 @@ public class WordListDetailActivity extends AppCompatActivity {
 
         // 단어 리스트 불러오기
         wordList = loadWordFromCsv();
-        adapter = new WordAdapter(wordList);
+        adapter = new WordAdapter(this, wordList, word -> {
+            // 삭제 로직
+            int position = 0;
+            Iterator<WordItem> iterator = wordList.iterator();
+            while (iterator.hasNext()) {
+                if (iterator.next().word.equals(word)) {
+                    iterator.remove();
+                    break;
+                }
+                position++;
+            }
+            removeWordFromCsv(word);
+            adapter.notifyItemRemoved(position);
+            //adapter.notifyDataSetChanged(); // RecyclerView 갱신
+            Toast.makeText(WordListDetailActivity.this, word + " 삭제됨", Toast.LENGTH_SHORT).show();
+        });
 
         // RecyclerView 초기화
         RecyclerView recyclerView = findViewById(R.id.wordDetailRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        // 단어장 추가 버튼 기능 할당
-        FloatingActionButton addWordListBtn = findViewById(R.id.addWordButton);
-        addWordListBtn.setOnClickListener(view -> showAddWordDialog());
+        // 단어 추가 버튼 기능 할당
+        FloatingActionButton addWordBtn = findViewById(R.id.addWordButton);
+        addWordBtn.setOnClickListener(view -> showAddWordDialog());
+
+
+
+    }
+
+    private void removeWordFromCsv(String word) {
+        File file = new File(getFilesDir(), fileName);
+
+        List<String[]> allRows = new ArrayList<>();
+
+        try (CSVReader reader = new CSVReader(new FileReader(file))) {
+            String[] line;
+            while ((line = reader.readNext()) != null) {
+                // 삭제할 단어는 건너뛰고 복사
+                if (line[0].equals(word)) {
+                    continue;
+                }
+
+                allRows.add(line);
+            }
+        } catch (Exception e) {
+            Log.e("CSV", "파일 읽기 오류", e);
+            return;
+        }
+
+        // 수정된 내용 저장
+        try (CSVWriter writer = new CSVWriter(new FileWriter(file))) {
+            writer.writeAll(allRows);
+        } catch (IOException e) {
+            Log.e("CSV", "파일 쓰기 오류", e);
+        }
+
+        int dotIndex = fileName.lastIndexOf(".csv");
+        updateWordCount(fileName.substring(0, dotIndex), wordList.size());
     }
 
     private void showAddWordDialog() {
