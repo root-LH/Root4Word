@@ -6,4 +6,5 @@
     <string name="add_wordList">단어장 추가</string>
     <string name="addWord">단어 추가</string>
     <string name="remove_word">단어 삭제</string>
+    <string name="remove_word_List">단어 리스트 삭제</string>
 </resources>

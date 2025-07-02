@@ -1,10 +1,7 @@
 package com.root4u.root4word;
 
-import static com.root4u.root4word.WordListMenu.WORDLIST_FILE;
-
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -88,8 +85,7 @@ public class WordListDetailActivity extends AppCompatActivity {
                 position++;
             }
             removeWordFromCsv(word);
-            adapter.notifyItemRemoved(position);
-            //adapter.notifyDataSetChanged(); // RecyclerView 갱신
+            adapter.notifyItemRemoved(position); // RecyclerView 갱신
             Toast.makeText(WordListDetailActivity.this, word + " 삭제됨", Toast.LENGTH_SHORT).show();
         });
 

@@ -12,8 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -25,16 +23,20 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 
+import org.checkerframework.checker.units.qual.A;
+import org.checkerframework.checker.units.qual.C;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
-public class WordListMenu extends AppCompatActivity {
+public class WordListMenuActivity extends AppCompatActivity {
 
     private final String TAG = "WordListMenu";
     public static final String WORDLIST_FILE = "wordList.csv";
@@ -98,7 +100,7 @@ public class WordListMenu extends AppCompatActivity {
             @Override
             public void handleOnBackPressed() {
                 // 뒤로가기 버튼 목적 변경
-                Intent intent = new Intent(WordListMenu.this, MainActivity.class);
+                Intent intent = new Intent(WordListMenuActivity.this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 overridePendingTransition(0, 0);
@@ -112,7 +114,7 @@ public class WordListMenu extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
                 if (id == R.id.nav_home){
-                    Intent intent = new Intent(WordListMenu.this, MainActivity.class);
+                    Intent intent = new Intent(WordListMenuActivity.this, MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     overridePendingTransition(0, 0);
@@ -133,13 +135,66 @@ public class WordListMenu extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.wordListRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         wordList = loadWordListFromCsv();
-        adapter = new WordListAdapter(this, wordList);
+        adapter = new WordListAdapter(this, wordList, wordListItem -> {
+            // 삭제 로직
+            int position = 0;
+            Iterator<WordListItem> iterator = wordList.iterator();
+            while (iterator.hasNext()){
+                if (iterator.next().getName().equals(wordListItem)){
+                    iterator.remove();
+                    break;
+                }
+                position++;
+            }
+            removeWordListFromCsv(wordListItem);
+            adapter.notifyItemRemoved(position); // RecyclerView 갱신
+            Toast.makeText(WordListMenuActivity.this, wordListItem + " 삭제됨", Toast.LENGTH_SHORT).show();
+        });
         recyclerView.setAdapter(adapter);
 
         // 단어장 추가 버튼 기능 할당
         FloatingActionButton addWordListBtn = findViewById(R.id.addWordList);
         addWordListBtn.setOnClickListener(view -> showAddWordListDialog());
 
+    }
+
+    private void removeWordListFromCsv(String wordListItem) {
+        File file = new File(getFilesDir(), WORDLIST_FILE);
+
+        List<String[]> allRows = new ArrayList<>();
+
+        try (CSVReader reader = new CSVReader(new FileReader(file))){
+            String[] line;
+            while ((line = reader.readNext()) != null){
+                // 삭제할 단어 리스트는 건너뛰고 복사
+                if (line[0].equals(wordListItem)){
+                    continue;
+                }
+
+                allRows.add(line);
+            }
+        } catch (Exception e){
+            Log.e("CSV", "파일 읽기 오류", e);
+            return;
+        }
+
+        // 수정된 내용 저장
+        try (CSVWriter writer = new CSVWriter(new FileWriter(file))){
+            writer.writeAll(allRows);
+        } catch (IOException e){
+            Log.e("CSV", "파일 쓰기 오류", e);
+        }
+        // 실제 파일 삭제
+        File targetFile = new File(getFilesDir(), wordListItem + ".csv");
+        if (targetFile.exists()) {
+            if (targetFile.delete()) {
+                Log.d("FileDelete", "파일 삭제 성공");
+            } else {
+                Log.d("FileDelete", "파일 삭제 실패");
+            }
+        } else {
+            Log.d("FileDelete", "파일이 존재하지 않음");
+        }
     }
 
     private void showAddWordListDialog() {
